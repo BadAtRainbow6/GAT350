@@ -1,5 +1,5 @@
 #include "Renderer.h"
-#include <SDL.h>
+#include "Framebuffer.h"
 
 bool Renderer::Initialize()
 {
@@ -15,28 +15,28 @@ bool Renderer::CreateWindow(int width, int height, const char *name)
 {
     // create window
     // returns pointer to window if successful or nullptr if failed
-    SDL_Window* window = SDL_CreateWindow(name,
+    m_window = SDL_CreateWindow(name,
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         width, height,
         SDL_WINDOW_SHOWN);
-    if (window == nullptr)
+    if (m_window == nullptr)
     {
         SDL_Quit();
         return false;
     }
 
     // create renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
-
-    while (true)
-    {
-        // clear screen
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-        SDL_RenderClear(renderer);
-
-        // show screen
-        SDL_RenderPresent(renderer);
-    }
+    m_renderer = SDL_CreateRenderer(m_window, -1, 0);
 
     return true;
+}
+
+void Renderer::CopyFramebuffer(const Framebuffer& framebuffer)
+{
+    SDL_RenderCopy(m_renderer, framebuffer.m_texture, NULL, NULL);
+}
+
+void Renderer::operator=(const Framebuffer& framebuffer)
+{
+    SDL_RenderCopy(m_renderer, framebuffer.m_texture, NULL, NULL);
 }
