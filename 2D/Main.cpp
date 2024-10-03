@@ -34,15 +34,17 @@ int main(int argc, char* argv[])
         // clear screen
         framebuffer.Clear(color_t{ 0, 0, 0, 255 });
 
-        for (int i = 0; i < 100; i++) 
+        for (int i = 0; i < 20; i++)
         {
-            int x = rand() % 200;
-            int y = rand() % 150;
+            int x1 = rand() % 200;
+            int x2 = rand() % 200;
+            int x3 = rand() % 200;
+            int y1 = rand() % 150;
+            int y2 = rand() % 150;
+            int y3 = rand() % 150;
 
-            framebuffer.DrawPoint(x, y, color_t{ 255, 255, 255, 255 });
+            framebuffer.DrawTriangle(x1, x2, x3, y1, y2, y3, color_t{ 255, 255, 255, 255 });
         }
-
-        framebuffer.DrawRect(10, 10, 100, 100, { 0, 255, 255, 255 });
 
         framebuffer.Update();
 
