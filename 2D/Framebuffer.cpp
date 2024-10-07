@@ -130,7 +130,40 @@ void Framebuffer::DrawTriangle(int x1, int x2, int x3, int y1, int y2, int y3, c
 	DrawLine(x3, x1, y3, y1, color);
 }
 
-void Framebuffer::DrawCircle(int cx, int cy, int radius, const color_t& color)
-{
+// at subsequence points
+void Framebuffer::DrawCircPoints(int xc, int yc, int x, int y, const color_t& color) {
+	DrawPoint(xc + x, yc + y, color);
+	DrawPoint(xc - x, yc + y, color);
+	DrawPoint(xc + x, yc - y, color);
+	DrawPoint(xc - x, yc - y, color);
+	DrawPoint(xc + y, yc + x, color);
+	DrawPoint(xc - y, yc + x, color);
+	DrawPoint(xc + y, yc - x, color);
+	DrawPoint(xc - y, yc - x, color);
+}
 
+// Function for circle-generation
+// using Bresenham's algorithm
+void Framebuffer::DrawCircle(int xc, int yc, int r, const color_t& color) {
+	int x = 0, y = r;
+	int d = 3 - 2 * r;
+	DrawCircPoints(xc, yc, x, y, color);
+	while (y >= x) {
+
+		// check for decision parameter
+		// and correspondingly 
+		// update d, y
+		if (d > 0) {
+			y--;
+			d = d + 4 * (x - y) + 10;
+		}
+		else
+			d = d + 4 * x + 6;
+
+		// Increment x after updating decision parameter
+		x++;
+
+		// Draw the circle using the new coordinates
+		DrawCircPoints(xc, yc, x, y, color);
+	}
 }
