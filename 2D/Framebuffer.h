@@ -22,6 +22,10 @@ public:
 
 	void DrawCircle(int cx, int cy, int radius, const color_t& color);
 
+	void DrawLinearCurve(int x1, int x2, int y1, int y2, const color_t& color);
+	void DrawQuadraticCurve(int x1, int x2, int x3, int y1, int y2, int y3, const color_t& color);
+	void DrawCubicCurve(int x1, int x2, int x3, int x4, int y1, int y2, int y3, int y4, const color_t& color);
+
 private:
 	void DrawCircPoints(int xc, int yc, int x, int y, const color_t& color);
 

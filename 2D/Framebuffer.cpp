@@ -1,5 +1,6 @@
 #include "Framebuffer.h"
 #include "Renderer.h"
+#include "MathUtils.h"
 
 Framebuffer::Framebuffer(const Renderer& renderer, int width, int height)
 {
@@ -165,5 +166,74 @@ void Framebuffer::DrawCircle(int xc, int yc, int r, const color_t& color) {
 
 		// Draw the circle using the new coordinates
 		DrawCircPoints(xc, yc, x, y, color);
+	}
+}
+
+void Framebuffer::DrawLinearCurve(int x1, int x2, int y1, int y2, const color_t& color)
+{
+	float dt = 1.0f / 10;
+	float t1 = 0;
+	
+	for (int i = 0; i < 10; i++) 
+	{
+		int sx1 = Lerp(x1, x2, t1);
+		int sy1 = Lerp(y1, y2, t1);
+
+		float t2 = t1 + dt;
+
+		int sx2 = Lerp(x1, x2, t2);
+		int sy2 = Lerp(y1, y2, t2);
+
+		t1 += dt;
+
+		DrawLine(sx1, sx2, sy1, sy2, color);
+	}
+}
+
+void Framebuffer::DrawQuadraticCurve(int x1, int x2, int x3, int y1, int y2, int y3, const color_t& color)
+{
+	float dt = 1.0f / 10;
+	float t1 = 0;
+	for (int i = 0; i < 10; i++)
+	{
+		int sx1;
+		int sy1;
+
+		QuadraticPoint(x1, x2, x3, y1, y2, y3, t1, sx1, sy1);
+
+		float t2 = t1 + dt;
+
+		int sx2;
+		int sy2;
+
+		QuadraticPoint(x1, x2, x3, y1, y2, y3, t2, sx2, sy2);
+
+		t1 += dt;
+
+		DrawLine(sx1, sx2, sy1, sy2, color);
+	}
+}
+
+void Framebuffer::DrawCubicCurve(int x1, int x2, int x3, int x4, int y1, int y2, int y3, int y4, const color_t& color)
+{
+	float dt = 1.0f / 10;
+	float t1 = 0;
+	for (int i = 0; i < 10; i++)
+	{
+		int sx1;
+		int sy1;
+
+		CubicPoint(x1, x2, x3, x4, y1, y2, y3, y4, t1, sx1, sy1);
+
+		float t2 = t1 + dt;
+
+		int sx2;
+		int sy2;
+
+		CubicPoint(x1, x2, x3, x4, y1, y2, y3, y4, t2, sx2, sy2);
+
+		t1 += dt;
+
+		DrawLine(sx1, sx2, sy1, sy2, color);
 	}
 }
