@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "Framebuffer.h"
 #include "MathUtils.h"
+#include "Image.h"
 #include <SDL.h>
 #include <iostream>
 
@@ -20,6 +21,11 @@ int main(int argc, char* argv[])
 
     Framebuffer framebuffer(renderer, 800, 600);
 
+    Image img1 = Image();
+    img1.Load("LebronFailedBeefJump.png");
+    Image img2 = Image();
+    img2.Load("GangsterMario.png");
+
     bool quit = false;
     while (!quit) {
         SDL_Event event;
@@ -35,18 +41,19 @@ int main(int argc, char* argv[])
         // clear screen
         framebuffer.Clear(color_t{ 0, 0, 0, 255 });
 
-        /*framebuffer.DrawLine(20, 30, 20, 30, color_t{ 255, 255, 255, 255 });
 
-        framebuffer.DrawTriangle(40, 50, 60, 40, 50, 40, color_t{ 255, 255, 255, 255 });
+        //framebuffer.DrawLine(20, 30, 20, 30, color_t{ 255, 255, 255, 255 });
+        /*
+        framebuffer.DrawTriangle(40, 50, 60, 40, 50, 40, color_t{255, 255, 255, 255});
 
         framebuffer.DrawCircle(100, 50, 20, color_t{ 255, 255, 255, 255 });*/
 
-        int mx;
+        /*int mx;
         int my;
         SDL_GetMouseState(&mx, &my);
 
         framebuffer.DrawLinearCurve(200, 300, 100, 200, color_t{ 255, 255, 255, 255 });
-        //framebuffer.DrawQuadraticCurve(100, mx, 400, 100, my, 100, color_t{ 255, 255, 255, 255 });
+        framebuffer.DrawQuadraticCurve(100, mx, 400, 100, my, 100, color_t{ 255, 255, 255, 255 });
         framebuffer.DrawCubicCurve(200, 200, mx, 600, 200, 100, my, 400, color_t{ 255, 255, 255, 255 });
 
         int ticks = SDL_GetTicks();
@@ -55,7 +62,10 @@ int main(int argc, char* argv[])
         int x;
         int y;
         CubicPoint(200, 200, mx, 600, 200, 100, my, 400, t, x, y);
-        framebuffer.DrawRect(x - 20, y - 20, 40, 40, color_t{ 255, 255, 255, 255 });
+        framebuffer.DrawRect(x - 20, y - 20, 40, 40, color_t{ 255, 255, 255, 255 });*/
+
+        framebuffer.DrawImage(100, 100, img1);
+        framebuffer.DrawImage(500, 100, img2);
 
         framebuffer.Update();
 
