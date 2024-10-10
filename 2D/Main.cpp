@@ -2,6 +2,7 @@
 #include "Framebuffer.h"
 #include "MathUtils.h"
 #include "Image.h"
+#include "PostProcess.h"
 #include <SDL.h>
 #include <iostream>
 
@@ -66,6 +67,8 @@ int main(int argc, char* argv[])
 
         framebuffer.DrawImage(100, 100, img1);
         framebuffer.DrawImage(500, 100, img2);
+
+        PostProcess::Monochrome(framebuffer.m_buffer);
 
         framebuffer.Update();
 
