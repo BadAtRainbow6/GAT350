@@ -15,6 +15,8 @@ namespace PostProcess
 
 	void Threshold(std::vector<color_t>& buffer, int threshold);
 
+	void Posterize(std::vector<color_t>& buffer, int levels);
+
 
 
 	void BoxBlur(std::vector<color_t>& buffer, int w, int h);

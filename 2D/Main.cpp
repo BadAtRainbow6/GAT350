@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
         framebuffer.DrawImage(100, 100, img1);
         framebuffer.DrawImage(500, 100, img2);
 
-        PostProcess::Threshold(framebuffer.m_buffer, 125);
+        PostProcess::Posterize(framebuffer.m_buffer, 5);
 
         framebuffer.Update();
 
