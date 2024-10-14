@@ -24,8 +24,13 @@ int main(int argc, char* argv[])
 
     Image img1 = Image();
     img1.Load("LebronFailedBeefJump.png");
+
     Image img2 = Image();
     img2.Load("GangsterMario.png");
+
+    Image imgAlpha = Image();
+    imgAlpha.Load("colors.png");
+    PostProcess::Alpha(imgAlpha.m_buffer, 128);
 
     bool quit = false;
     while (!quit) {
@@ -49,10 +54,11 @@ int main(int argc, char* argv[])
 
         framebuffer.DrawCircle(100, 50, 20, color_t{ 255, 255, 255, 255 });*/
 
-        /*int mx;
+        int mx;
         int my;
         SDL_GetMouseState(&mx, &my);
 
+        /*
         framebuffer.DrawLinearCurve(200, 300, 100, 200, color_t{ 255, 255, 255, 255 });
         framebuffer.DrawQuadraticCurve(100, mx, 400, 100, my, 100, color_t{ 255, 255, 255, 255 });
         framebuffer.DrawCubicCurve(200, 200, mx, 600, 200, 100, my, 400, color_t{ 255, 255, 255, 255 });
@@ -65,10 +71,12 @@ int main(int argc, char* argv[])
         CubicPoint(200, 200, mx, 600, 200, 100, my, 400, t, x, y);
         framebuffer.DrawRect(x - 20, y - 20, 40, 40, color_t{ 255, 255, 255, 255 });*/
 
+        SetBlendMode(BlendMode::NORMAL);
         framebuffer.DrawImage(100, 100, img1);
         framebuffer.DrawImage(500, 100, img2);
 
-        PostProcess::Emboss(framebuffer.m_buffer, framebuffer.m_width, framebuffer.m_height);
+        SetBlendMode(BlendMode::ALPHA);
+        framebuffer.DrawImage(mx, my, imgAlpha);
 
         framebuffer.Update();
 

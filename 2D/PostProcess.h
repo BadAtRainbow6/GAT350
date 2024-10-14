@@ -17,7 +17,7 @@ namespace PostProcess
 
 	void Posterize(std::vector<color_t>& buffer, int levels);
 
-
+	void Alpha(std::vector<color_t>& buffer, int alpha);
 
 	void BoxBlur(std::vector<color_t>& buffer, int w, int h);
 	void GaussianBlur(std::vector<color_t>& buffer, int w, int h);

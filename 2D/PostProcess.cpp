@@ -87,8 +87,16 @@ namespace PostProcess
         std::for_each(buffer.begin(), buffer.end(), [level](auto& color)
             {
                 color.r = static_cast<uint8_t>(Clamp(color.r / level * level, 0, 255));
-                color.g = static_cast<uint8_t>(Clamp(color.g / level * level , 0, 255));
+                color.g = static_cast<uint8_t>(Clamp(color.g / level * level, 0, 255));
                 color.b = static_cast<uint8_t>(Clamp(color.b / level * level, 0, 255));
+            });
+    }
+
+    void Alpha(std::vector<color_t>& buffer, int alpha)
+    {
+        std::for_each(buffer.begin(), buffer.end(), [alpha](auto& color)
+            {
+                color.a = alpha;
             });
     }
 
