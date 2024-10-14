@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
         framebuffer.DrawImage(100, 100, img1);
         framebuffer.DrawImage(500, 100, img2);
 
-        PostProcess::Posterize(framebuffer.m_buffer, 5);
+        PostProcess::Emboss(framebuffer.m_buffer, framebuffer.m_width, framebuffer.m_height);
 
         framebuffer.Update();
 

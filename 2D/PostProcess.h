@@ -20,7 +20,8 @@ namespace PostProcess
 
 
 	void BoxBlur(std::vector<color_t>& buffer, int w, int h);
-	void BoxBlur(std::vector<color_t>& buffer, int w, int h);
-	void BoxBlur(std::vector<color_t>& buffer, int w, int h);
+	void GaussianBlur(std::vector<color_t>& buffer, int w, int h);
+	void Sharpen(std::vector<color_t>& buffer, int w, int h);
 	void Edge(std::vector<color_t>& buffer, int w, int h, int threshold);
+	void Emboss(std::vector<color_t>& buffer, int w, int h);
 }
