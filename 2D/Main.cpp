@@ -3,6 +3,8 @@
 #include "MathUtils.h"
 #include "Image.h"
 #include "PostProcess.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <SDL.h>
 #include <iostream>
 
@@ -31,6 +33,9 @@ int main(int argc, char* argv[])
     Image imgAlpha = Image();
     imgAlpha.Load("colors.png");
     PostProcess::Alpha(imgAlpha.m_buffer, 128);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0f));
 
     bool quit = false;
     while (!quit) {
