@@ -13,4 +13,7 @@ public:
 public:
 	SDL_Renderer* m_renderer;
 	SDL_Window* m_window;
+
+	int m_width;
+	int m_height;
 };

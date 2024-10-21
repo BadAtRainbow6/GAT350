@@ -28,6 +28,9 @@ bool Renderer::CreateWindow(int width, int height, const char *name)
     // create renderer
     m_renderer = SDL_CreateRenderer(m_window, -1, 0);
 
+    m_width = width;
+    m_height = height;
+
     return true;
 }
 

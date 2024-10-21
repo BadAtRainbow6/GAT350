@@ -7,6 +7,7 @@
 #include "Transform.h"
 #include "ETime.h"
 #include "Input.h"
+#include "Camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <SDL.h>
 #include <iostream>
@@ -14,6 +15,10 @@
 int main(int argc, char* argv[])
 {
     Renderer renderer = Renderer();
+
+    Model model;
+    model.Load("teapot.obj");
+    model.SetColor({ 0, 255, 0, 255 });
 
     if (!renderer.Initialize()) {
         printf("Error when initializing.");
@@ -24,6 +29,11 @@ int main(int argc, char* argv[])
         printf("Error when creating window.");
         return 1;
     }
+
+    Camera camera(renderer.m_width, renderer.m_height);
+    camera.SetView(glm::vec3{ 0, 0, -50 }, glm::vec3{ 0 });
+    camera.SetProjection(60.0f, 800.0f / 600.0f, 0.1f, 200.0f);
+    Transform cameraTransform{ { 0, 0, -20} };
 
     Time time;
     Input input;
@@ -43,9 +53,8 @@ int main(int argc, char* argv[])
     PostProcess::Alpha(imgAlpha.m_buffer, 128);
 
     vertices_t vertices = { { -5, 5, 0 }, { 5, 5, 0 }, { -5, -5, 0 } };
-    Model model(vertices, { 0, 255, 0, 255 });
 
-    Transform transform{ glm::vec3{ 240, 240, 0 }, glm::vec3{ 0, 0, 45 }, glm::vec3{ 3 } };
+    Transform transform{ glm::vec3{ 0 }, glm::vec3{ 0, 0, 45 }, glm::vec3{ 3 } };
 
     SetBlendMode(BlendMode::NORMAL);
 
@@ -112,16 +121,18 @@ int main(int argc, char* argv[])
         if (input.GetKeyDown(SDL_SCANCODE_D)) direction.x = 1;
         else if (input.GetKeyDown(SDL_SCANCODE_A)) direction.x = -1;
 
-        if (input.GetKeyDown(SDL_SCANCODE_W)) direction.y = -1;
-        else if (input.GetKeyDown(SDL_SCANCODE_S)) direction.y = 1;
+        if (input.GetKeyDown(SDL_SCANCODE_W)) direction.y = 1;
+        else if (input.GetKeyDown(SDL_SCANCODE_S)) direction.y = -1;
 
         if (input.GetKeyDown(SDL_SCANCODE_Q)) direction.z = 1;
         else if (input.GetKeyDown(SDL_SCANCODE_E)) direction.z = -1;
 
-        transform.position += direction * time.GetDeltaTime() * 70.0f;
-        transform.rotation.z += time.GetDeltaTime() * 90;
+        cameraTransform.position += direction * time.GetDeltaTime() * 70.0f;
+        camera.SetView(cameraTransform.position, cameraTransform.position + glm::vec3{ 0, 0, 1 });
 
-        model.Draw(framebuffer, transform.GetMatrix());
+        //transform.rotation.z += time.GetDeltaTime() * 90;
+
+        model.Draw(framebuffer, transform.GetMatrix(), camera);
 
         framebuffer.Update();
 
