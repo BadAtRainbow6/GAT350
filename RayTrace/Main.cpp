@@ -123,14 +123,14 @@ int main(int argc, char* argv[])
             if (input.GetKeyDown(SDL_SCANCODE_D))   direction.x = 1;
             if (input.GetKeyDown(SDL_SCANCODE_A))   direction.x = -1;
 
-            if (input.GetKeyDown(SDL_SCANCODE_W))   direction.y = 1;
-            if (input.GetKeyDown(SDL_SCANCODE_S))   direction.y = -1;
+            if (input.GetKeyDown(SDL_SCANCODE_Q))   direction.y = 1;
+            if (input.GetKeyDown(SDL_SCANCODE_E))   direction.y = -1;
 
-            if (input.GetKeyDown(SDL_SCANCODE_E))   direction.z = 1;
-            if (input.GetKeyDown(SDL_SCANCODE_Q))   direction.z = -1;
+            if (input.GetKeyDown(SDL_SCANCODE_W))   direction.z = 1;
+            if (input.GetKeyDown(SDL_SCANCODE_S))   direction.z = -1;
 
-            cameraTransform.rotation.y += input.GetMouseRelative().x * 0.25f;
-            cameraTransform.rotation.x = Clamp((cameraTransform.rotation.x + input.GetMouseRelative().y * 0.25f), -89.0f, 89.0f);
+            cameraTransform.rotation.y += input.GetMouseRelative().x * 0.1f;
+            cameraTransform.rotation.x = Clamp((cameraTransform.rotation.x + input.GetMouseRelative().y * 0.1f), -89.0f, 89.0f);
 
             glm::vec3 offset = cameraTransform.GetMatrix() * glm::vec4{ direction, 0 };
 
