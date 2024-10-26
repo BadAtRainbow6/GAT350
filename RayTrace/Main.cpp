@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
         }
 
         // clear screen
-        framebuffer.Clear(ColorConvert(color4_t{ 0, 1, 0, 1 }));
+        framebuffer.Clear(ColorConvert(color4_t{ 0, 0, 0, 1 }));
 
         scene.Render(framebuffer, camera);
 

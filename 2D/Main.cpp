@@ -18,9 +18,17 @@ int main(int argc, char* argv[])
 {
     Renderer renderer = Renderer();
 
-    std::shared_ptr<Model> model = std::make_shared<Model>();
-    model->Load("cube-2.obj");
-    model->SetColor({ 0, 255, 0, 255 });
+    std::shared_ptr<Model> tableModel = std::make_shared<Model>();
+    tableModel->Load("table.obj");
+
+    std::shared_ptr<Model> appleModel = std::make_shared<Model>();
+    appleModel->Load("apple.obj");
+
+    std::shared_ptr<Model> plateModel = std::make_shared<Model>();
+    plateModel->Load("plate.obj");
+
+    Image background;
+    background.Load("room.png");
 
     if (!renderer.Initialize()) {
         printf("Error when initializing.");
@@ -43,16 +51,22 @@ int main(int argc, char* argv[])
 
     Framebuffer framebuffer(renderer, 800, 600);
 
-    vertices_t vertices = { { -5, 5, 0 }, { 5, 5, 0 }, { -5, -5, 0 } };
-
     std::vector<std::unique_ptr<Actor>> actors;
-    for (int i = 0; i < 20; i++)
-    {
-        Transform transform{ { randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f) }, glm::vec3{0, 0, 0}, glm::vec3{2}};
-        std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, model);
-        actor->SetColor(color_t{ (uint8_t)random(256), (uint8_t)random(256), (uint8_t)random(256), 255 });
-        actors.push_back(std::move(actor));
-    }
+
+	Transform tableTransform{ glm::vec3{ 0, 0, 0 }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 0.2f } };
+	std::unique_ptr<Actor> tableActor = std::make_unique<Actor>(tableTransform, tableModel);
+	tableActor->SetColor(color_t{ 150, 75, 0, 255 });
+	actors.push_back(std::move(tableActor));
+
+    Transform plateTransform{ glm::vec3{ 0, 11.0f, 0 }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 2.0f } };
+    std::unique_ptr<Actor> plateActor = std::make_unique<Actor>(plateTransform, plateModel);
+    plateActor->SetColor(color_t{ 200, 200, 200, 255 });
+    actors.push_back(std::move(plateActor));
+
+    Transform appleTransform{ glm::vec3{ 0.0f, 14.0f, 0.0f }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 2.0f } };
+    std::unique_ptr<Actor> appleActor = std::make_unique<Actor>(appleTransform, appleModel);
+    appleActor->SetColor(color_t{ 255, 0, 0, 255 });
+    actors.push_back(std::move(appleActor));
 
     SetBlendMode(BlendMode::NORMAL);
 
@@ -143,7 +157,7 @@ int main(int argc, char* argv[])
         
         camera.SetView(cameraTransform.position, cameraTransform.position + cameraTransform.GetForward());
 
-        //transform.rotation.z += time.GetDeltaTime() * 90;
+        framebuffer.DrawImage(0, 0, background);
 
         for (auto& actor : actors) 
         {
