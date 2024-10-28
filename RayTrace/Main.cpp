@@ -12,6 +12,7 @@
 #include "Random.h"
 #include "Scene.h"
 #include "Sphere.h"
+#include "Plane.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <SDL.h>
@@ -42,9 +43,23 @@ int main(int argc, char* argv[])
 
     Scene scene;
 
-    std::shared_ptr<Material> material = std::make_shared<Material>(color3_t{ 1, 0, 0 });
-    std::unique_ptr<Sphere> object = std::make_unique<Sphere>(glm::vec3{ 0 }, 2.0f, material);
-    scene.AddObject(std::move(object));
+    std::vector<std::shared_ptr<Material>> materials;
+    materials.push_back(std::make_shared<Material>(color3_t{ 1, 0, 0 }));
+    materials.push_back(std::make_shared<Material>(color3_t{ 0, 1, 0 }));
+    materials.push_back(std::make_shared<Material>(color3_t{ 0, 0, 1 }));
+    materials.push_back(std::make_shared<Material>(color3_t{ 1, 1, 0 }));
+    materials.push_back(std::make_shared<Material>(color3_t{ 1, 0, 1 }));
+    materials.push_back(std::make_shared<Material>(color3_t{ 0, 1, 1 }));
+
+    for (int i = 0; i < 10; i++)
+    {
+        auto object = std::make_unique<Sphere>(random(glm::vec3{ -10 }, glm::vec3{ 10 }), randomf(0.5f, 3.0f), materials[random(0, materials.size() - 1)]);
+        scene.AddObject(std::move(object));
+    }
+
+    std::shared_ptr<Material> gray = std::make_shared<Material>(color3_t{ 0.5f });
+    auto plane = std::make_unique<Plane>(glm::vec3{ 0, -5, 0 }, glm::vec3{ 0, 1, 0 }, gray); 
+    scene.AddObject(std::move(plane));
 
     bool quit = false;
     while (!quit) {
