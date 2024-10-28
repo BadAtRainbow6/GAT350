@@ -44,12 +44,12 @@ int main(int argc, char* argv[])
     Scene scene;
 
     std::vector<std::shared_ptr<Material>> materials;
-    materials.push_back(std::make_shared<Material>(color3_t{ 1, 0, 0 }));
-    materials.push_back(std::make_shared<Material>(color3_t{ 0, 1, 0 }));
-    materials.push_back(std::make_shared<Material>(color3_t{ 0, 0, 1 }));
-    materials.push_back(std::make_shared<Material>(color3_t{ 1, 1, 0 }));
-    materials.push_back(std::make_shared<Material>(color3_t{ 1, 0, 1 }));
-    materials.push_back(std::make_shared<Material>(color3_t{ 0, 1, 1 }));
+    materials.push_back(std::make_shared<Lambertian>(color3_t{ 1, 0, 0 }));
+    materials.push_back(std::make_shared<Lambertian>(color3_t{ 0, 1, 0 }));
+    materials.push_back(std::make_shared<Lambertian>(color3_t{ 0, 0, 1 }));
+    materials.push_back(std::make_shared<Lambertian>(color3_t{ 1, 1, 0 }));
+    materials.push_back(std::make_shared<Lambertian>(color3_t{ 1, 0, 1 }));
+    materials.push_back(std::make_shared<Lambertian>(color3_t{ 0, 1, 1 }));
 
     for (int i = 0; i < 10; i++)
     {
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
         scene.AddObject(std::move(object));
     }
 
-    std::shared_ptr<Material> gray = std::make_shared<Material>(color3_t{ 0.5f });
+    std::shared_ptr<Material> gray = std::make_shared<Lambertian>(color3_t{ 0.5f });
     auto plane = std::make_unique<Plane>(glm::vec3{ 0, -5, 0 }, glm::vec3{ 0, 1, 0 }, gray); 
     scene.AddObject(std::move(plane));
 

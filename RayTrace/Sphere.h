@@ -13,7 +13,7 @@ public:
 		SceneObject{ material } 
 	{}
 
-	bool Hit(const Ray& ray);
+	bool Hit(const Ray& ray, RaycastHit& raycastHit, float minDistance, float maxDistance);
 
 private:
 	glm::vec3 m_center{ 0 };

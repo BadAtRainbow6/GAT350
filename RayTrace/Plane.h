@@ -11,7 +11,7 @@ public:
 		m_normal{ normal }
 	{}
 
-	bool Hit(const Ray& ray) override;
+	bool Hit(const Ray& ray, RaycastHit& raycastHit, float minDistance, float maxDistance) override;
 
 private:
 	glm::vec3 m_center;

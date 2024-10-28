@@ -46,7 +46,17 @@ inline glm::vec3 Cross(const glm::vec3& v1, const glm::vec3& v2)
 	return glm::vec3{ (v1.y * v2.z - v2.y * v1.z), (v1.z * v2.x - v2.z * v1.x), (v1.x * v2.y - v2.x * v1.y) };
 }
 
+inline float Dot(const glm::vec3& v1, const glm::vec3& v2)
+{
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+inline glm::vec3 Reflect(const glm::vec3& i, const glm::vec3& n)
+{
+	return i - (n * Dot(n, i)) * 2.0f;
+}
+
 inline bool Approximately(float value1, float value2)
 {
-	return (abs(value2 - value1) < FLT_EPSILON);
+	return (fabs(value2 - value1) < FLT_EPSILON);
 }
