@@ -47,9 +47,9 @@ int main(int argc, char* argv[])
     materials.push_back(std::make_shared<Lambertian>(color3_t{ 1, 0, 0 }));
     materials.push_back(std::make_shared<Lambertian>(color3_t{ 0, 1, 0 }));
     materials.push_back(std::make_shared<Lambertian>(color3_t{ 0, 0, 1 }));
-    materials.push_back(std::make_shared<Lambertian>(color3_t{ 1, 1, 0 }));
-    materials.push_back(std::make_shared<Lambertian>(color3_t{ 1, 0, 1 }));
-    materials.push_back(std::make_shared<Lambertian>(color3_t{ 0, 1, 1 }));
+    materials.push_back(std::make_shared<Metal>(color3_t{ 1, 1, 0 }, 0.75f));
+    materials.push_back(std::make_shared<Metal>(color3_t{ 1, 0, 1 }, 0.75f));
+    materials.push_back(std::make_shared<Metal>(color3_t{ 0, 1, 1 }, 0.75f));
 
     for (int i = 0; i < 10; i++)
     {

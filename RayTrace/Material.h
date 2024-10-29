@@ -21,5 +21,16 @@ class Lambertian : public Material
 public:
 	Lambertian(const color3_t& albedo) : Material{ albedo } {}
 
-	bool Scatter(const Ray& ray, const RaycastHit& raycastHit, color3_t& attenuation, Ray& scatter);
+	virtual bool Scatter(const Ray& ray, const RaycastHit& raycastHit, color3_t& attenuation, Ray& scatter);
+};
+
+class Metal : public Material
+{
+public:
+
+	Metal(const glm::vec3& albedo, float fuzz) : Material{ albedo }, m_fuzz{ fuzz } {}
+	virtual bool Scatter(const Ray& ray, const RaycastHit& raycastHit, color3_t& attenuation, Ray& scattered);
+
+protected:
+	float m_fuzz = 0;
 };
