@@ -2,8 +2,10 @@
 #include "MathUtils.h"
 #include "Scene.h"
 
-color3_t Tracer::Trace(Scene& scene, const Ray ray, float minDistance, float maxDistance)
+color3_t Tracer::Trace(Scene& scene, const Ray& ray, float minDistance, float maxDistance, int depth)
 {
+    if (depth == 0) return color3_t{ 0 };
+
     RaycastHit raycastHit;
     float closestDistance = maxDistance;
     bool isHit = false;
@@ -23,7 +25,11 @@ color3_t Tracer::Trace(Scene& scene, const Ray ray, float minDistance, float max
         Ray scatter;
         if (raycastHit.material.lock()->Scatter(ray, raycastHit, attenuation, scatter))
         {
-            return attenuation * Trace(scene, scatter, minDistance, maxDistance);
+            return attenuation * Trace(scene, scatter, minDistance, maxDistance, depth - 1);
+        }
+        else
+        {
+            return raycastHit.material.lock()->GetEmissive();
         }
     }
 

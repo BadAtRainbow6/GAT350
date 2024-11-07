@@ -11,6 +11,8 @@ public:
 
     void SetView(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up = glm::vec3{ 0, 1, 0 });
     Ray GetRay(const glm::vec2& point) const;
+    void SetFOV(int fov) { m_fov = fov; }
+
 private:
 
     void CalculateViewPlane();
