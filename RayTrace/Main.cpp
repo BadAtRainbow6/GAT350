@@ -48,32 +48,18 @@ int main(int argc, char* argv[])
 
     //InitScene01(scene, camera);
 
-    std::vector<std::shared_ptr<Material>> materials;
-    materials.push_back(std::make_shared<Lambertian>(color3_t{ 1, 0, 0 }));
-    materials.push_back(std::make_shared<Lambertian>(color3_t{ 0, 1, 0 }));
-    materials.push_back(std::make_shared<Emissive>(color3_t{ 0, 0, 1 }, 10.0f));
-    materials.push_back(std::make_shared<Emissive>(color3_t{ 1, 1, 0 }, 10.0f));
-    materials.push_back(std::make_shared<Metal>(color3_t{ 1, 0, 1 }, 0.75f));
-    materials.push_back(std::make_shared<Metal>(color3_t{ 0, 1, 1 }, 0.75f));
-    materials.push_back(std::make_shared<Dielectric>(color3_t{ 0.5f, 0, 1 }, 1.33f));
-    materials.push_back(std::make_shared<Dielectric>(color3_t{ 0, 0, 0 }, 1.33f));
-
-    /*for (int i = 0; i < 10; i++)
-    {
-        auto object = std::make_unique<Sphere>(random(glm::vec3{ -10 }, glm::vec3{ 10 }), randomf(0.5f, 3.0f), materials[random(0, materials.size() - 1)]);
-        scene.AddObject(std::move(object));
-    }*/
-
-    std::shared_ptr<Material> green = std::make_shared<Lambertian>(color3_t{ 0, 1, 0 });
-    auto apple = std::make_unique<Model>(green); 
-    apple->Load("cube-2.obj");
-    scene.AddObject(std::move(apple));
+    auto white = std::make_shared<Lambertian>(color3_t{ 1, 1, 1 });
+    auto red = std::make_shared<Lambertian>(color3_t{ 1, 0, 0 });
+    auto green = std::make_shared<Lambertian>(color3_t{ 0, 1, 0 });
+    auto metal = std::make_shared<Metal>(color3_t{ 0, 1, 0 }, 0);
 
     std::shared_ptr<Material> gray = std::make_shared<Lambertian>(color3_t{ 0.5f });
-    auto plane = std::make_unique<Plane>(glm::vec3{ 0, -5, 0 }, glm::vec3{ 0, 1, 0 }, gray); 
+    auto plane = std::make_unique<Plane>(Transform{ glm::vec3{ 0, -2, 0 }, glm::vec3{ 0, 0, 0 } }, gray);
     scene.AddObject(std::move(plane));
 
-    scene.Render(framebuffer, camera, 10, 5);
+    scene.Update();
+    scene.Render(framebuffer, camera, 20, 5);
+    framebuffer.Update();
 
     bool quit = false;
     while (!quit) {
@@ -92,8 +78,6 @@ int main(int argc, char* argv[])
         // clear screen
         /*framebuffer.Clear(ColorConvert(color4_t{ 0, 0, 0, 1 }));*/
 
-        framebuffer.Update();
-
         renderer = framebuffer;
 
         // show screen
@@ -105,48 +89,48 @@ int main(int argc, char* argv[])
 
 void InitScene01(Scene& scene, Camera& camera)
 {
-    //camera.SetFOV(20.0f);
-    //camera.SetView({ 13, 2, 3 }, { 0, 0, 0 });
+    camera.SetFOV(20.0f);
+    camera.SetView({ 13, 2, 3 }, { 0, 0, 0 });
 
-    //auto ground_material = std::make_shared<Lambertian>(color3_t(0.5f));
-    //scene.AddObject(std::make_unique<Plane>(Transform{ glm::vec3{ 0 } }, ground_material));
+    auto ground_material = std::make_shared<Lambertian>(color3_t(0.5f));
+    scene.AddObject(std::make_unique<Plane>(Transform{ glm::vec3{ 0 } }, ground_material));
 
-    //for (int a = -11; a < 11; a++) {
-    //    for (int b = -11; b < 11; b++) {
-    //        auto choose_mat = randomf();
-    //        glm::vec3 center(a + 0.9 * randomf(), 0.2, b + 0.9 * randomf());
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
+            auto choose_mat = randomf();
+            glm::vec3 center(a + 0.9 * randomf(), 0.2, b + 0.9 * randomf());
 
-    //        if ((center - glm::vec3(4, 0.2, 0)).length() > 0.9) {
-    //            std::shared_ptr<Material> sphere_material;
+            if ((center - glm::vec3(4, 0.2, 0)).length() > 0.9) {
+                std::shared_ptr<Material> sphere_material;
 
-    //            if (choose_mat < 0.8) {
-    //                // diffuse
-    //                auto albedo = HSVtoRGB(randomf(0, 360), 1.0f, 1.0f);
-    //                sphere_material = std::make_shared<Lambertian>(albedo);
-    //                scene.AddObject(std::make_unique<Sphere>(Transform{ center }, 0.2f, sphere_material));
-    //            }
-    //            else if (choose_mat < 0.95) {
-    //                // metal
-    //                auto albedo = HSVtoRGB(randomf(0, 360), 1.0f, 1.0f);
-    //                auto fuzz = randomf(0.0f, 0.5f);
-    //                sphere_material = std::make_shared<Metal>(albedo, fuzz);
-    //                scene.AddObject(std::make_unique<Sphere>(Transform{ center }, 0.2f, sphere_material));
-    //            }
-    //            else {
-    //                // glass
-    //                sphere_material = std::make_shared<Dielectric>(color3_t{ 1 }, 1.5f);
-    //                scene.AddObject(std::make_unique<Sphere>(Transform{ center }, 0.2f, sphere_material));
-    //            }
-    //        }
-    //    }
-    //}
+                if (choose_mat < 0.8) {
+                    // diffuse
+                    auto albedo = HSVtoRGB(randomf(0, 360), 1.0f, 1.0f);
+                    sphere_material = std::make_shared<Lambertian>(albedo);
+                    scene.AddObject(std::make_unique<Sphere>(Transform{ center }, 0.2f, sphere_material));
+                }
+                else if (choose_mat < 0.95) {
+                    // metal
+                    auto albedo = HSVtoRGB(randomf(0, 360), 1.0f, 1.0f);
+                    auto fuzz = randomf(0.0f, 0.5f);
+                    sphere_material = std::make_shared<Metal>(albedo, fuzz);
+                    scene.AddObject(std::make_unique<Sphere>(Transform{ center }, 0.2f, sphere_material));
+                }
+                else {
+                    // glass
+                    sphere_material = std::make_shared<Dielectric>(color3_t{ 1 }, 1.5f);
+                    scene.AddObject(std::make_unique<Sphere>(Transform{ center }, 0.2f, sphere_material));
+                }
+            }
+        }
+    }
 
-    //auto material1 = std::make_shared<Dielectric>(color3_t{ 1 }, 1.5f);
-    //scene.AddObject(std::make_unique<Sphere>(Transform{ glm::vec3{ 0, 1, 0 } }, 1.0f, material1));
+    auto material1 = std::make_shared<Dielectric>(color3_t{ 1 }, 1.5f);
+    scene.AddObject(std::make_unique<Sphere>(Transform{ glm::vec3{ 0, 1, 0 } }, 1.0f, material1));
 
-    //auto material2 = std::make_shared<Lambertian>(color3_t(0.4f, 0.2f, 0.1f));
-    //scene.AddObject(std::make_unique<Sphere>(Transform{ glm::vec3{ -4, 1, 0 } }, 1.0f, material2));
+    auto material2 = std::make_shared<Lambertian>(color3_t(0.4f, 0.2f, 0.1f));
+    scene.AddObject(std::make_unique<Sphere>(Transform{ glm::vec3{ -4, 1, 0 } }, 1.0f, material2));
 
-    //auto material3 = std::make_shared<Metal>(color3_t(0.7f, 0.6f, 0.5f), 0.0f);
-    //scene.AddObject(std::make_unique<Sphere>(Transform{ glm::vec3{ 4, 1, 0 } }, 1.0f, material3));
+    auto material3 = std::make_shared<Metal>(color3_t(0.7f, 0.6f, 0.5f), 0.0f);
+    scene.AddObject(std::make_unique<Sphere>(Transform{ glm::vec3{ 4, 1, 0 } }, 1.0f, material3));
 }
