@@ -18,9 +18,6 @@
 
 int main(int argc, char* argv[])
 {
-	std::string img = "C:/Users/jrowe/source/repos/GAT350/Build/Photos/";
-
-	
 	// initialize SDL
 	Time time;
 	Input input;
@@ -39,22 +36,15 @@ int main(int argc, char* argv[])
 
 
 	Framebuffer framebuffer(r, 800, 600);
-	Image image;
-	image.Load(img + "Scenic.jpg");
-	
-	Image alpha_image;
-	alpha_image.Load(img + "colors.png");
-	PostProcess::Alpha(alpha_image.m_buffer, 128);
 
 	//shader
 	VertexShader::uniforms.view = camera.GetView();
 	VertexShader::uniforms.projection = camera.GetProjection();
 	VertexShader::uniforms.ambient = color3_t{ 0.01 };
 
-	VertexShader::uniforms.light.position = glm::vec3{ 10, 10, -10 };
-	VertexShader::uniforms.light.direction = glm::vec3{ 0, -1, 0 }; // light pointing down
+	VertexShader::uniforms.light.position = glm::vec3{ 10, 10, 10 };
+	//VertexShader::uniforms.light.direction = glm::vec3{ 0, -1, 0 }; // light pointing down
 	VertexShader::uniforms.light.color = color3_t{ 1 }; // white light
-
 
 	Shader::framebuffer = &framebuffer;
 
@@ -63,27 +53,24 @@ int main(int argc, char* argv[])
 	
 	model->Load("cube.obj");
 
-
 	//Transform transform{ {0 , 0, 0 }, glm::vec3{ 0, 0, 0 }, glm::vec3 { 2 } };
 	Transform potTransform{ {0 , 0, 0 }, glm::vec3{ 15, 0, 180 }, glm::vec3 { 8 } };
 	Transform sphereTrasform{ { 100 , 100, 0 }, glm::vec3{ 180, 0, 0 }, glm::vec3 { 50 } };
 
 	//Actor actor(transform, model);
 
-	auto teapot = std::make_shared<Model>();
+	auto cube = std::make_shared<Model>();
 	auto sphere = std::make_shared<Model>();
 
 	//actors
 	std::vector<std::unique_ptr<Actor>> actors;
 
-	teapot->Load("sphere.obj");
+	cube->Load("cube.obj");
 	//sphere->Load("Models/sphere.obj");
 
-	Transform transform{ glm::vec3{ 0 }, glm::vec3{ 0 }, glm::vec3{ 2 } };	
-	std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, teapot);	
+	Transform transform{ glm::vec3{ 0, 0, -2 }, glm::vec3{ 0 }, glm::vec3{ 5 } };	
+	std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, cube);	
 	actors.push_back(std::move(actor));	
-
-	
 	
 	bool quit = false;
 	while (!quit) //main loop
@@ -153,7 +140,7 @@ int main(int argc, char* argv[])
 		else 
 		{
 			input.SetRealativeMode(false);
-		}
+		} 
 		
 		camera.SetView(cameraTransform.position, cameraTransform.position + cameraTransform.GetForward());
 		VertexShader::uniforms.view = camera.GetView();
