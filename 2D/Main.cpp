@@ -1,176 +1,182 @@
+#include "SDL.h"
+#include "iostream"
 #include "Renderer.h"
 #include "Framebuffer.h"
-#include "MathUtils.h"
 #include "Image.h"
+#include "Input.h"
+#include "Shader.h"
+#include "Actor.h"
+#include "Random.h"
 #include "PostProcess.h"
+#include "MathUtils.h"
 #include "Model.h"
 #include "Transform.h"
 #include "ETime.h"
-#include "Input.h"
 #include "Camera.h"
-#include "Actor.h"
-#include "Random.h"
+#include <memory>
 #include <glm/gtc/matrix_transform.hpp>
-#include <SDL.h>
-#include <iostream>
 
 int main(int argc, char* argv[])
 {
-    Renderer renderer = Renderer();
+	std::string img = "C:/Users/jrowe/source/repos/GAT350/Build/Photos/";
 
-    std::shared_ptr<Model> tableModel = std::make_shared<Model>();
-    tableModel->Load("table.obj");
+	
+	// initialize SDL
+	Time time;
+	Input input;
 
-    std::shared_ptr<Model> appleModel = std::make_shared<Model>();
-    appleModel->Load("apple.obj");
+	class Renderer r;
+	Camera camera(r.m_width, r.m_height);
+	camera.SetProjection(60.0f, 800.0f / 600, 0.1f, 600.0f);
+	Transform cameraTransform{ { 0, 0, 10 } };
 
-    std::shared_ptr<Model> plateModel = std::make_shared<Model>();
-    plateModel->Load("plate.obj");
+	input.Initialize();
+	r.Init_SDL();
 
-    Image background;
-    background.Load("room.png");
-
-    if (!renderer.Initialize()) {
-        printf("Error when initializing.");
-        return 1;
-    }
-
-    if (!renderer.CreateWindow(800, 600, "Home")) {
-        printf("Error when creating window.");
-        return 1;
-    }
-
-    Camera camera(renderer.m_width, renderer.m_height);
-    camera.SetProjection(60.0f, 800.0f / 600.0f, 0.1f, 200.0f);
-    Transform cameraTransform{ { 0, 0, -20} };
-
-    Time time;
-    Input input;
-
-    input.Initialize();
-
-    Framebuffer framebuffer(renderer, 800, 600);
-
-    std::vector<std::unique_ptr<Actor>> actors;
-
-	Transform tableTransform{ glm::vec3{ 0, 0, 0 }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 0.2f } };
-	std::unique_ptr<Actor> tableActor = std::make_unique<Actor>(tableTransform, tableModel);
-	tableActor->SetColor(color_t{ 150, 75, 0, 255 });
-	actors.push_back(std::move(tableActor));
-
-    Transform plateTransform{ glm::vec3{ 0, 11.0f, 0 }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 2.0f } };
-    std::unique_ptr<Actor> plateActor = std::make_unique<Actor>(plateTransform, plateModel);
-    plateActor->SetColor(color_t{ 200, 200, 200, 255 });
-    actors.push_back(std::move(plateActor));
-
-    Transform appleTransform{ glm::vec3{ 0.0f, 14.0f, 0.0f }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 2.0f } };
-    std::unique_ptr<Actor> appleActor = std::make_unique<Actor>(appleTransform, appleModel);
-    appleActor->SetColor(color_t{ 255, 0, 0, 255 });
-    actors.push_back(std::move(appleActor));
-
-    SetBlendMode(BlendMode::NORMAL);
-
-    bool quit = false;
-    while (!quit) {
-        time.Tick();
-        input.Update();
-
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                quit = true;
-            }
-            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
-                quit = true;
-            }
-        }
-
-        // clear screen
-        framebuffer.Clear(color_t{ 0, 0, 0, 255 });
+	// create window
+	// returns pointer to window if successful or nullptr if failed
+	r.Create_Window("Game Engine", 800, 600);
 
 
-        //framebuffer.DrawLine(20, 30, 20, 30, color_t{ 255, 255, 255, 255 });
-        /*
-        framebuffer.DrawTriangle(40, 50, 60, 40, 50, 40, color_t{255, 255, 255, 255});
+	Framebuffer framebuffer(r, 800, 600);
+	Image image;
+	image.Load(img + "Scenic.jpg");
+	
+	Image alpha_image;
+	alpha_image.Load(img + "colors.png");
+	PostProcess::Alpha(alpha_image.m_buffer, 128);
 
-        framebuffer.DrawCircle(100, 50, 20, color_t{ 255, 255, 255, 255 });*/
+	//shader
+	VertexShader::uniforms.view = camera.GetView();
+	VertexShader::uniforms.projection = camera.GetProjection();
+	VertexShader::uniforms.ambient = color3_t{ 0.01 };
 
-        int mx;
-        int my;
-        SDL_GetMouseState(&mx, &my);
+	VertexShader::uniforms.light.position = glm::vec3{ 10, 10, -10 };
+	VertexShader::uniforms.light.direction = glm::vec3{ 0, -1, 0 }; // light pointing down
+	VertexShader::uniforms.light.color = color3_t{ 1 }; // white light
 
-        /*
-        framebuffer.DrawLinearCurve(200, 300, 100, 200, color_t{ 255, 255, 255, 255 });
-        framebuffer.DrawQuadraticCurve(100, mx, 400, 100, my, 100, color_t{ 255, 255, 255, 255 });
-        framebuffer.DrawCubicCurve(200, 200, mx, 600, 200, 100, my, 400, color_t{ 255, 255, 255, 255 });
 
-        int x;
-        int y;
-        CubicPoint(200, 200, mx, 600, 200, 100, my, 400, t, x, y);
-        framebuffer.DrawRect(x - 20, y - 20, 40, 40, color_t{ 255, 255, 255, 255 });*/
+	Shader::framebuffer = &framebuffer;
 
-#pragma region alpha_blending
+	//models
+	std::shared_ptr<Model> model = std::make_shared<Model>();
+	
+	model->Load("cube.obj");
 
-        /*SetBlendMode(BlendMode::NORMAL);
-        framebuffer.DrawImage(100, 100, img1);
-        framebuffer.DrawImage(500, 100, img2);
 
-        SetBlendMode(BlendMode::ALPHA);
-        framebuffer.DrawImage(mx, my, imgAlpha);*/
+	//Transform transform{ {0 , 0, 0 }, glm::vec3{ 0, 0, 0 }, glm::vec3 { 2 } };
+	Transform potTransform{ {0 , 0, 0 }, glm::vec3{ 15, 0, 180 }, glm::vec3 { 8 } };
+	Transform sphereTrasform{ { 100 , 100, 0 }, glm::vec3{ 180, 0, 0 }, glm::vec3 { 50 } };
+
+	//Actor actor(transform, model);
+
+	auto teapot = std::make_shared<Model>();
+	auto sphere = std::make_shared<Model>();
+
+	//actors
+	std::vector<std::unique_ptr<Actor>> actors;
+
+	teapot->Load("sphere.obj");
+	//sphere->Load("Models/sphere.obj");
+
+	Transform transform{ glm::vec3{ 0 }, glm::vec3{ 0 }, glm::vec3{ 2 } };	
+	std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, teapot);	
+	actors.push_back(std::move(actor));	
+
+	
+	
+	bool quit = false;
+	while (!quit) //main loop
+	{
+		time.Tick();
+		input.Update();
+		SDL_Event event;
+		while (SDL_PollEvent(&event))
+		{
+			if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+			{
+				quit = true;
+			}
+		}
+
+		//clear screen
+		framebuffer.Clear(color_t{ 0,0,0,255 });
+	
+#pragma region ALPHA_BLEND
+		SetBlendMode(BlendMode::Alpha);	
+#pragma endregion	
+
+#pragma region POST_PROCESS 
+		//PostProcess::Invert(framebuffer.m_buffer);
+		//PostProcess::Monochrome(framebuffer.m_buffer);
+		//PostProcess::Brightness(framebuffer.m_buffer, -50);
+		//PostProcess::ColorBalance(framebuffer.m_buffer, 50, 200, 0);
+		//PostProcess::Noise(framebuffer.m_buffer, 80);
+		//PostProcess::Threshold(framebuffer.m_buffer, 100);
+		//PostProcess::Posterize(framebuffer.m_buffer, 3);
+		//PostProcess::BoxBlur(framebuffer.m_buffer, framebuffer.m_width, framebuffer.m_height);
+		//PostProcess::GaussianBlur(framebuffer.m_buffer, framebuffer.m_width, framebuffer.m_height);
+		//PostProcess::Sharpen(framebuffer.m_buffer, framebuffer.m_width, framebuffer.m_height);
+		//PostProcess::Edge(framebuffer.m_buffer, framebuffer.m_width, framebuffer.m_height, 3);
+		//PostProcess::Emboss(framebuffer.m_buffer, framebuffer.m_width, framebuffer.m_height);
 
 #pragma endregion
 
-        /*glm::mat4 modelMatrix = glm::mat4(1.0f);
-        glm::mat4 translate = glm::translate(modelMatrix, glm::vec3(240.0f, 240.0f, 0.0f));
-        glm::mat4 scale = glm::scale(modelMatrix, glm::vec3(5));
-        glm::mat4 rotate = glm::rotate(modelMatrix, glm::radians(time * 90), glm::vec3{ 0, 0, 1 });
+#pragma region MOVE_CAM
+		if (input.GetMouseButtonDown(2))
+		{
+			input.SetRealativeMode(true);
 
-        modelMatrix = translate * scale * rotate;
+			glm::vec3 direction{ 0 };
+			if (input.GetKeyDown(SDL_SCANCODE_RIGHT)) direction.x = 1;
+			if (input.GetKeyDown(SDL_SCANCODE_LEFT)) direction.x = -1;
 
-        model.Draw(framebuffer, modelMatrix);*/
+			if (input.GetKeyDown(SDL_SCANCODE_UP)) direction.y = 1;
+			if (input.GetKeyDown(SDL_SCANCODE_DOWN)) direction.y = -1;
 
-        if (input.GetMouseButtonDown(2)) 
-        {
-            input.SetMouseRelative(true);
+			if (input.GetKeyDown(SDL_SCANCODE_W)) direction.z = 1;
+			if (input.GetKeyDown(SDL_SCANCODE_S)) direction.z = -1;
 
-            glm::vec3 direction{ 0 };
-            if (input.GetKeyDown(SDL_SCANCODE_D))   direction.x = 1;
-            if (input.GetKeyDown(SDL_SCANCODE_A))   direction.x = -1;
+			cameraTransform.rotation.y = input.GetMousePosition().x * 0.25f;
+			cameraTransform.rotation.x = input.GetMousePosition().y * 0.25f;
 
-            if (input.GetKeyDown(SDL_SCANCODE_W))   direction.y = 1;
-            if (input.GetKeyDown(SDL_SCANCODE_S))   direction.y = -1;
+			glm::vec3 offset = cameraTransform.GetMatrix() * glm::vec4{ direction, 0 };
 
-            if (input.GetKeyDown(SDL_SCANCODE_E))   direction.z = 1;
-            if (input.GetKeyDown(SDL_SCANCODE_Q))   direction.z = -1;
+			cameraTransform.position += offset * 70.0f * time.GetDeltaTime();
 
-            cameraTransform.rotation.y += input.GetMouseRelative().x * 0.25f;
-            cameraTransform.rotation.x = Clamp((cameraTransform.rotation.x + input.GetMouseRelative().y * 0.25f), -89.0f, 89.0f);
+			//transform.rotation.z += 90 * time.GetDeltaTime();
+		}
+		else 
+		{
+			input.SetRealativeMode(false);
+		}
+		
+		camera.SetView(cameraTransform.position, cameraTransform.position + cameraTransform.GetForward());
+		VertexShader::uniforms.view = camera.GetView();
 
-            glm::vec3 offset = cameraTransform.GetMatrix() * glm::vec4{ direction, 0 };
+#pragma endregion
 
-            cameraTransform.position += offset * 70.0f * time.GetDeltaTime();
-        }
-        else
-        {
-            input.SetMouseRelative(false);
-        }
-        
-        camera.SetView(cameraTransform.position, cameraTransform.position + cameraTransform.GetForward());
+		//framebuffer.DrawImage(100, 100, image);
+		
+		//teapot.Draw(framebuffer, potTransform.GetMatrix(), camera);
+		//teapot.SetColor({ 128, 77, 178, 255 });
 
-        framebuffer.DrawImage(0, 0, background);
 
-        for (auto& actor : actors) 
-        {
-            actor->Draw(framebuffer, camera);
-        }
+		for (auto& actor : actors)
+		{
+			//actor->SetColor({0, 0, 255, 255});
+			actor->Draw();
+		}
+		framebuffer.Update();
 
-        framebuffer.Update();
-
-        renderer = framebuffer;
-
-        // show screen
-        SDL_RenderPresent(renderer.m_renderer);
-    }
-
-    return 0;
+		r.CopyFrameBuffer(framebuffer);
+		//show screen
+		SDL_RenderPresent(r.m_renderer);
+	
+	}
+	return 0;
 }

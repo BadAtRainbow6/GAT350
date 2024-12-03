@@ -22,7 +22,7 @@ public:
 	bool GetMouseButtonDown(uint8_t button) { return m_mouseButtonState[button]; }
 	bool GetPreviousMouseButtonDown(uint8_t button) { return m_prevMouseButtonState[button]; }
 
-	void SetRealativeMode(bool relativity);
+	void SetRealativeMode(bool relative);
 
 private:
 	std::vector<uint8_t> m_keyboardState;

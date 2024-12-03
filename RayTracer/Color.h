@@ -9,29 +9,12 @@
 
 
 using color_t = SDL_Color;
-
-enum class BlendMode
-{
-	Normal,
-	Alpha,
-	Additive,
-	Multiply
-};
-
-color_t ColorBlend(const color_t& src, const color_t& dest);
-color_t NormalBlend(const color_t& src, const color_t& dest);
-color_t AlphaBlend(const color_t& src, const color_t& dest);
-
-color_t AdditiveBlend(const color_t& src, const color_t& dest);
-color_t MultiplyBlend(const color_t& src, const color_t& dest);
-
-using color_t = SDL_Color;
 using color3_t = glm::vec3;
 using color4_t = glm::vec4;
 
-inline float LinearToGamma(float linear)
+inline float LinearToGamma(float linear) 
 {
-	if (linear > 0)
+	if (linear > 0) 
 	{
 		return std::sqrt(linear);
 	}
@@ -45,7 +28,7 @@ inline color3_t HSVtoRGB(const glm::vec3& hsv)
 
 inline color3_t HSVtoRGB(float hue, float saturation, float value)
 {
-	return glm::rgbColor(glm::vec3{ hue, saturation, value });
+	return glm::rgbColor(glm::vec3{ hue, saturation, value});
 }
 
 inline color_t ColorConvert(const color4_t& color4)
@@ -68,6 +51,20 @@ inline color_t ColorConvert(const color3_t& color3)
 
 	return color;
 }
+enum class BlendMode
+{
+	Normal,
+	Alpha,
+	Additive,
+	Multiply
+};
+
+color_t ColorBlend(const color_t& src, const color_t& dest);
+color_t NormalBlend(const color_t& src, const color_t& dest);
+color_t AlphaBlend(const color_t& src, const color_t& dest);
+
+color_t AdditiveBlend(const color_t& src, const color_t& dest);
+color_t MultiplyBlend(const color_t& src, const color_t& dest);
 
 void SetBlendMode(BlendMode blendmode);
 
